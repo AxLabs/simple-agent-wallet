@@ -65,7 +65,7 @@ make test
 make build
 ```
 
-Requires local `../x402/go` (go.mod `replace`) for foundation mechanisms.
+Requires local `../x402/go` (go.mod `replace`) — use the AxLabs `x402` fork while Hedera mechanisms are not upstream. CI checks out `AxLabs/x402@feat/go-mechanisms-hedera-exact`.
 
 ## License
 

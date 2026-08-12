@@ -13,9 +13,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: simple-agent-wallet
+      # Hedera mechanisms live on AxLabs/x402 until upstreamed.
       - uses: actions/checkout@v4
         with:
-          repository: x402-foundation/x402
+          repository: AxLabs/x402
+          ref: feat/go-mechanisms-hedera-exact
           path: x402
           sparse-checkout: |
             go
@@ -49,7 +51,8 @@ jobs:
           path: simple-agent-wallet
       - uses: actions/checkout@v4
         with:
-          repository: x402-foundation/x402
+          repository: AxLabs/x402
+          ref: feat/go-mechanisms-hedera-exact
           path: x402
           sparse-checkout: |
             go
