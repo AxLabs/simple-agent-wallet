@@ -167,6 +167,69 @@ a:hover {
   gap: 0.75rem;
 }
 
+.hero-downloads {
+  margin-top: 1.5rem;
+  max-width: 36rem;
+  animation: rise 0.7s ease both;
+  animation-delay: 0.2s;
+}
+
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.dl-os {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: rgba(26, 31, 39, 0.55);
+}
+
+.dl-os-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.dl-os-head img {
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.92;
+}
+
+.dl-arch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.dl-arch a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--line);
+  color: var(--steel);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.dl-arch a:hover {
+  color: var(--ink);
+  border-color: var(--steel-dim);
+  background: rgba(205, 85, 62, 0.12);
+}
+
 .hero-install {
   margin-top: 1.75rem;
   max-width: 36rem;
@@ -469,7 +532,8 @@ code {
 @media (max-width: 860px) {
   .hero-grid,
   .features,
-  .docs-shell {
+  .docs-shell,
+  .dl-grid {
     grid-template-columns: 1fr;
   }
 

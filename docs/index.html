@@ -44,8 +44,43 @@
               EVM, Solana, and Hedera. Inspect. Confirm. Pay.
             </p>
             <div class="cta-row">
-              <a class="btn btn-primary" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">Make the cut</a>
+              <a class="btn btn-primary" href="#download">Make the cut</a>
               <a class="btn btn-ghost" href="agents.md">Agent manual</a>
+            </div>
+            <div class="hero-downloads" id="download">
+              <p class="cmd-label">Download binary</p>
+              <div class="dl-grid" data-release-downloads>
+                <div class="dl-os">
+                  <div class="dl-os-head">
+                    <img src="assets/os-linux.svg" alt="" width="22" height="22" />
+                    <span>Linux</span>
+                  </div>
+                  <div class="dl-arch">
+                    <a data-asset="linux_amd64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">amd64</a>
+                    <a data-asset="linux_arm64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">arm64</a>
+                  </div>
+                </div>
+                <div class="dl-os">
+                  <div class="dl-os-head">
+                    <img src="assets/os-apple.svg" alt="" width="22" height="22" />
+                    <span>macOS</span>
+                  </div>
+                  <div class="dl-arch">
+                    <a data-asset="darwin_arm64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">Apple Silicon</a>
+                    <a data-asset="darwin_amd64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">Intel</a>
+                  </div>
+                </div>
+                <div class="dl-os">
+                  <div class="dl-os-head">
+                    <img src="assets/os-windows.svg" alt="" width="22" height="22" />
+                    <span>Windows</span>
+                  </div>
+                  <div class="dl-arch">
+                    <a data-asset="windows_amd64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">amd64</a>
+                    <a data-asset="windows_arm64" href="https://github.com/AxLabs/simple-agent-wallet/releases/latest">arm64</a>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="hero-install">
               <p class="cmd-label">Install the agent skill</p>
@@ -99,5 +134,30 @@ saw pay https://example.com/paid --confirm</code></pre>
         </div>
       </footer>
     </div>
+    <script>
+      (function () {
+        var root = document.querySelector("[data-release-downloads]");
+        if (!root) return;
+        fetch("https://api.github.com/repos/AxLabs/simple-agent-wallet/releases/latest")
+          .then(function (r) {
+            if (!r.ok) throw new Error("release fetch failed");
+            return r.json();
+          })
+          .then(function (rel) {
+            var assets = rel.assets || [];
+            root.querySelectorAll("a[data-asset]").forEach(function (a) {
+              var key = a.getAttribute("data-asset");
+              var hit = assets.find(function (x) {
+                return x.name && x.name.indexOf("saw_") === 0 && x.name.indexOf("_" + key + ".") !== -1;
+              });
+              if (hit && hit.browser_download_url) {
+                a.href = hit.browser_download_url;
+                a.setAttribute("download", "");
+              }
+            });
+          })
+          .catch(function () {});
+      })();
+    </script>
   </body>
 </html>
