@@ -1,0 +1,501 @@
+:root {
+  --bg0: #12151a;
+  --bg1: #1a1f27;
+  --bg2: #242b35;
+  --steel: #c5ccd6;
+  --steel-dim: #8b949e;
+  --ink: #eef1f5;
+  --muted: #9aa3ad;
+  --accent: #cd553e;
+  --accent-soft: #e07a66;
+  --line: rgba(197, 204, 214, 0.14);
+  --font-display: "Syne", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(205, 85, 62, 0.18), transparent 55%),
+    radial-gradient(900px 500px at -10% 30%, rgba(140, 160, 180, 0.08), transparent 50%),
+    linear-gradient(165deg, var(--bg0), var(--bg1) 45%, #151920);
+  background-attachment: fixed;
+}
+
+a {
+  color: var(--accent-soft);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: #f0a090;
+}
+
+.wrap {
+  width: min(1080px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+/* —— Nav —— */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.brand img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.brand span {
+  font-size: 1.15rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--ink);
+}
+
+/* —— Hero —— */
+.hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  padding: 1.5rem 0 2.5rem;
+  overflow: visible;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.hero .sub {
+  margin: 0.55rem 0 0.85rem;
+  font-family: var(--font-body);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  color: var(--steel);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.2rem;
+  border-radius: 0.35rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.lede {
+  margin: 0 0 1.75rem;
+  max-width: 32rem;
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero-install {
+  margin-top: 1.75rem;
+  max-width: 36rem;
+  animation: rise 0.7s ease both;
+  animation-delay: 0.22s;
+}
+
+.hero-install .cmd-label {
+  margin: 0 0 0.45rem;
+  color: var(--steel-dim);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-install pre {
+  margin: 0;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #b84834;
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn-ghost:hover {
+  border-color: var(--steel-dim);
+  color: var(--ink);
+}
+
+.hero-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 22rem;
+}
+
+.blade {
+  width: min(22rem, 70vw);
+  height: auto;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.4));
+  animation: spin 64s linear infinite;
+}
+
+.blade-ring {
+  position: absolute;
+  inset: 10%;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  animation: pulse 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-copy > * {
+  animation: rise 0.7s ease both;
+}
+
+.hero-copy > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.hero-copy > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+/* —— Sections —— */
+.section {
+  padding: 3.5rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.section h2 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.section p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  max-width: 40rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.feature {
+  padding: 1.1rem 0;
+  border-top: 2px solid var(--accent);
+}
+
+.feature h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.feature p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+pre,
+code {
+  font-family: var(--font-mono);
+}
+
+.section .cmd-label {
+  margin: 1.75rem 0 0;
+  color: var(--steel);
+  font-size: 0.95rem;
+}
+
+.section .cmd-label + pre {
+  margin-top: 0.55rem;
+}
+
+
+/* —— Docs layout —— */
+.docs-shell {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0 4rem;
+}
+
+.docs-nav {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  padding: 0.5rem 0;
+  font-size: 0.92rem;
+}
+
+.docs-nav a {
+  display: block;
+  padding: 0.35rem 0;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.docs-nav a:hover,
+.docs-nav a[aria-current="page"] {
+  color: var(--ink);
+}
+
+.docs-nav .group {
+  margin: 1rem 0 0.35rem;
+  color: var(--steel-dim);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.docs-body h1 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.docs-body h2 {
+  margin: 2rem 0 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.docs-body h3 {
+  margin: 1.4rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.docs-body p,
+.docs-body li {
+  color: var(--muted);
+}
+
+.docs-body ul {
+  padding-left: 1.2rem;
+}
+
+.docs-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+.docs-body th,
+.docs-body td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.55rem 0.4rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.docs-body th {
+  color: var(--steel);
+  font-weight: 600;
+}
+
+.docs-body td {
+  color: var(--muted);
+}
+
+.agent-note {
+  margin: 1rem 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(205, 85, 62, 0.08);
+  color: var(--steel);
+  font-size: 0.95rem;
+}
+
+/* —— Footer —— */
+.foot {
+  border-top: 1px solid var(--line);
+  padding: 1.75rem 0 2.5rem;
+}
+
+.powered {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.powered-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.powered-by:hover {
+  color: var(--ink);
+}
+
+.powered-by img {
+  height: 1.35rem;
+  width: auto;
+}
+
+.foot-meta {
+  color: var(--steel-dim);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 860px) {
+  .hero-grid,
+  .features,
+  .docs-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-nav {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+
+  .docs-nav .group {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 1rem;
+  }
+
+  .hero-visual {
+    order: -1;
+    min-height: 14rem;
+  }
+
+  .blade {
+    width: min(16rem, 60vw);
+  }
+}

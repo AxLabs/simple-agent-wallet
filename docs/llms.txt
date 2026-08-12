@@ -1,0 +1,35 @@
+# SAW — Simple Agent Wallet
+
+> Powered by AxLabs (https://axlabs.com)
+
+CLI for agent wallets and x402 payments (EVM, Solana, Hedera).
+
+## Docs
+
+- Agent manual: /agents.md
+- Human docs: /docs/
+- Releases: https://github.com/AxLabs/simple-agent-wallet/releases
+- Source: https://github.com/AxLabs/simple-agent-wallet
+
+## Install
+
+Download binary from GitHub Releases. `saw version` to verify.
+
+Agent skill:
+
+```
+npx skills add AxLabs/simple-agent-wallet --skill saw -g -y
+```
+
+## Core commands
+
+```
+saw init
+saw init status
+saw inspect <url> [--method POST --data '...']
+saw pay <url> --confirm [--method POST --data '...']
+```
+
+Do not scrape PAYMENT-REQUIRED headers with curl — use saw inspect/pay.
+
+Secrets never on argv (stdin/prompts only). Wallet: ~/.config/saw/wallet.json

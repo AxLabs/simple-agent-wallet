@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SAW — Simple Agent Wallet</title>
+    <meta
+      name="description"
+      content="SAW is a simple multi-family agent wallet CLI for x402 payments across EVM, Solana, and Hedera. Powered by AxLabs."
+    />
+    <link rel="icon" href="assets/saw-mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/site.css" />
+    <link rel="alternate" type="text/plain" title="Agent docs" href="llms.txt" />
+    <link rel="alternate" type="text/markdown" title="agents.md" href="agents.md" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="brand" href="./">
+          <img src="assets/saw-mark.svg" alt="" width="32" height="32" />
+          <span>SAW</span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="docs/">Docs</a>
+          <a href="agents.md">agents.md</a>
+          <a href="https://github.com/AxLabs/simple-agent-wallet/releases">Releases</a>
+          <a href="https://github.com/AxLabs/simple-agent-wallet">GitHub</a>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>SAW</h1>
+            <p class="sub">Simple Agent Wallet</p>
+            <p class="lede">
+              A focused CLI wallet for agents that pay over HTTP 402 / x402 —
+              EVM, Solana, and Hedera. Inspect. Confirm. Pay.
+            </p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="docs/#install">Make the cut</a>
+              <a class="btn btn-ghost" href="agents.md">Agent manual</a>
+            </div>
+            <div class="hero-install">
+              <p class="cmd-label">Install the agent skill</p>
+              <pre><code>npx skills add AxLabs/simple-agent-wallet --skill saw -g -y</code></pre>
+            </div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <div class="blade-ring"></div>
+            <img class="blade" src="assets/saw-mark.svg" alt="" />
+          </div>
+        </div>
+      </main>
+
+      <section class="section">
+        <h2>Built for agents that ship payments</h2>
+        <p>
+          SAW keeps keys local, never takes secrets on the CLI, and speaks
+          x402 <code>exact</code> and <code>batch-settlement</code> without
+          scraping truncated payment headers.
+        </p>
+        <div class="features">
+          <div class="feature">
+            <h3>Multi-family</h3>
+            <p>EVM (<code>eip155:*</code>), Solana, and Hedera in one wallet file.</p>
+          </div>
+          <div class="feature">
+            <h3>x402 native</h3>
+            <p><code>saw inspect</code> then <code>saw pay --confirm</code> — headers stay inside the tool.</p>
+          </div>
+          <div class="feature">
+            <h3>Agent-ready</h3>
+            <p>Skill + plain <code>agents.md</code> / <code>llms.txt</code> for discovery.</p>
+          </div>
+        </div>
+        <p class="cmd-label">Then pay:</p>
+        <pre><code>saw init
+saw inspect https://example.com/paid
+saw pay https://example.com/paid --confirm</code></pre>
+      </section>
+
+      <footer class="foot">
+        <div class="powered">
+          <a class="powered-by" href="https://axlabs.com" rel="noopener">
+            <span>Powered by</span>
+            <img src="assets/axlabs-logo.svg" alt="AxLabs" />
+          </a>
+          <p class="foot-meta">
+            <a href="https://github.com/AxLabs/simple-agent-wallet">AxLabs/simple-agent-wallet</a>
+            · Apache License 2.0
+          </p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

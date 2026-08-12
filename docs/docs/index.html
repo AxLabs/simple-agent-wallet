@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Docs — SAW</title>
+    <meta name="description" content="Documentation for SAW — Simple Agent Wallet." />
+    <link rel="icon" href="../assets/saw-mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/site.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="brand" href="../">
+          <img src="../assets/saw-mark.svg" alt="" width="32" height="32" />
+          <span>SAW</span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="./" aria-current="page">Docs</a>
+          <a href="../agents.md">agents.md</a>
+          <a href="https://github.com/AxLabs/simple-agent-wallet/releases">Releases</a>
+          <a href="https://github.com/AxLabs/simple-agent-wallet">GitHub</a>
+        </nav>
+      </header>
+
+      <div class="docs-shell">
+        <nav class="docs-nav" aria-label="Docs">
+          <div class="group">Start</div>
+          <a href="#install">Install</a>
+          <a href="#init">Init</a>
+          <a href="#rpc">RPC config</a>
+          <div class="group">Pay</div>
+          <a href="#pay">Pay flow</a>
+          <a href="#batch">Batch settlement</a>
+          <a href="#commands">Commands</a>
+          <div class="group">Agents</div>
+          <a href="#rules">Rules</a>
+          <a href="../agents.md">agents.md</a>
+          <a href="../llms.txt">llms.txt</a>
+        </nav>
+
+        <article class="docs-body">
+          <h1>Documentation</h1>
+          <p class="agent-note">
+            Agents: prefer <a href="../agents.md">agents.md</a> or
+            <a href="../llms.txt">llms.txt</a> — same content, plain text.
+          </p>
+
+          <h2 id="install">Install</h2>
+          <p>
+            Download a binary from
+            <a href="https://github.com/AxLabs/simple-agent-wallet/releases">GitHub Releases</a>
+            and place <code>saw</code> on <code>PATH</code>. Verify with
+            <code>saw version</code>.
+          </p>
+          <p>From source:</p>
+          <pre><code>make build &amp;&amp; make install</code></pre>
+          <p>Agent skill (Cursor / compatible skill hosts):</p>
+          <pre><code>npx skills add AxLabs/simple-agent-wallet --skill saw -g -y</code></pre>
+
+          <h2 id="init">Init</h2>
+          <pre><code>saw init                              # interactive TTY wizard
+saw init create --family evm
+saw init create --family solana
+saw init import --family evm          # private key or mnemonic on stdin
+saw init import --family solana
+saw init import --family hedera --account-id 0.0.x
+saw init status                       # addresses only; never secrets</code></pre>
+          <p>
+            Secrets: <strong>stdin / prompts only</strong> — never CLI flags.
+            Optional encryption via <code>--encrypt</code> /
+            <code>SAW_PASSWORD</code>.
+          </p>
+          <p>
+            Wallet: <code>~/.config/saw/wallet.json</code> (mode
+            <code>0600</code>). Override dir: <code>SAW_CONFIG_DIR</code>.
+          </p>
+
+          <h2 id="rpc">RPC config</h2>
+          <p>Edit <code>~/.config/saw/config.env</code>:</p>
+          <pre><code>SAW_RPC_8453=https://mainnet.base.org
+SAW_RPC_84532=https://sepolia.base.org
+SAW_SOLANA_RPC=https://api.mainnet-beta.solana.com
+SAW_HEDERA_NETWORK=testnet</code></pre>
+
+          <h2 id="pay">Pay flow (x402)</h2>
+          <p>
+            Do <strong>not</strong> <code>curl</code> pay URLs and scrape
+            <code>PAYMENT-REQUIRED</code> headers. Tool output truncates long
+            base64. <code>saw</code> fetches and signs them itself.
+          </p>
+          <ol>
+            <li>
+              Inspect (do not pay yet):
+              <pre><code>saw inspect &lt;url&gt; [--method GET|POST] [--data '...']</code></pre>
+            </li>
+            <li>
+              Confirm with the user: amount, asset, network, payTo, scheme, and
+              feePayer when present.
+            </li>
+            <li>
+              If EVM <code>permit2</code> and allowance may be missing:
+              <pre><code>saw approve-permit2 --chain-id &lt;N&gt; --token 0x… --confirm</code></pre>
+            </li>
+            <li>
+              Pay once (same method/body as inspect):
+              <pre><code>saw pay &lt;url&gt; --confirm \
+  [--scheme exact|batch-settlement] \
+  [--network eip155:8453|solana:…|hedera:testnet] \
+  [--asset 0x…] \
+  [--asset-transfer-method eip3009|permit2] \
+  [--method POST --data '...']</code></pre>
+            </li>
+          </ol>
+          <p><code>--confirm</code> is required. One attempt; no loops without user confirmation.</p>
+
+          <h2 id="batch">Batch settlement</h2>
+          <p>
+            Configure <code>SAW_RPC_&lt;chainId&gt;</code> so channel recovery
+            works. Sessions persist under <code>~/.config/saw/channels/</code>.
+            Optional: <code>SAW_BATCH_DEPOSIT_MULTIPLIER</code> (default 5).
+          </p>
+          <pre><code>saw channels
+saw refund &lt;url&gt; --confirm
+saw refund &lt;url&gt; --amount &lt;units&gt; --confirm</code></pre>
+
+          <h2 id="commands">Commands</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>saw init</code> / <code>create</code> / <code>import</code> / <code>status</code></td>
+                <td>Multi-family wallet lifecycle</td>
+              </tr>
+              <tr>
+                <td><code>saw address [--family]</code></td>
+                <td>Print configured addresses</td>
+              </tr>
+              <tr>
+                <td><code>saw balance …</code></td>
+                <td>Native / token balances</td>
+              </tr>
+              <tr>
+                <td><code>saw inspect &lt;url&gt;</code></td>
+                <td>Decode 402 <code>accepts[]</code></td>
+              </tr>
+              <tr>
+                <td><code>saw pay &lt;url&gt; --confirm</code></td>
+                <td>Sign and retry</td>
+              </tr>
+              <tr>
+                <td><code>saw channels</code> / <code>saw refund</code></td>
+                <td>Batch-settlement sessions</td>
+              </tr>
+              <tr>
+                <td><code>saw approve-permit2 … --confirm</code></td>
+                <td>ERC-20 approve Permit2</td>
+              </tr>
+              <tr>
+                <td><code>saw transfer … --confirm</code></td>
+                <td>EVM / Solana / Hedera transfers</td>
+              </tr>
+              <tr>
+                <td><code>saw call</code> / <code>saw abi encode</code></td>
+                <td>EVM only</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="rules">Rules</h2>
+          <ul>
+            <li>Never print private keys or mnemonics after init.</li>
+            <li>Never invent header names — use <code>saw inspect</code> / <code>saw pay</code> output.</li>
+            <li>Never pass <code>PAYMENT-REQUIRED</code> / <code>PAYMENT-SIGNATURE</code> tokens as CLI args.</li>
+            <li>Discovery of merchant URLs comes from the user or the 402 body.</li>
+            <li>If the selected accept family has no credentials, run <code>saw init</code> for that family first.</li>
+          </ul>
+        </article>
+      </div>
+
+      <footer class="foot">
+        <div class="powered">
+          <a class="powered-by" href="https://axlabs.com" rel="noopener">
+            <span>Powered by</span>
+            <img src="../assets/axlabs-logo.svg" alt="AxLabs" />
+          </a>
+          <p class="foot-meta">
+            <a href="../">Home</a> ·
+            <a href="https://github.com/AxLabs/simple-agent-wallet">GitHub</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

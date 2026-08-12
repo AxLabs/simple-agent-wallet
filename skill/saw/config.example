@@ -1,0 +1,7 @@
+# saw RPC endpoints (no secrets)
+# SAW_RPC_8453=https://mainnet.base.org
+# SAW_RPC_84532=https://sepolia.base.org
+# SAW_SOLANA_RPC=https://api.mainnet-beta.solana.com
+# SAW_HEDERA_NETWORK=testnet
+# SAW_HEDERA_MIRROR=
+# SAW_BATCH_DEPOSIT_MULTIPLIER=5
