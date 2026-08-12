@@ -8,12 +8,12 @@ CLI for agent wallets and x402 payments (EVM, Solana, Hedera).
 
 - Agent manual: /agents.md
 - Human docs: /docs/
-- Releases: https://github.com/AxLabs/simple-agent-wallet/releases
+- Latest release: https://github.com/AxLabs/simple-agent-wallet/releases/latest
 - Source: https://github.com/AxLabs/simple-agent-wallet
 
 ## Install
 
-Download binary from GitHub Releases. `saw version` to verify.
+Download binary from the latest release. `saw version` to verify.
 
 Agent skill:
 

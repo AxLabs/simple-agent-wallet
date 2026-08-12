@@ -12,7 +12,7 @@ Site: human docs at `/docs/`. This file is the agent-oriented manual.
 
 ## Install
 
-Download from https://github.com/AxLabs/simple-agent-wallet/releases
+Download from https://github.com/AxLabs/simple-agent-wallet/releases/latest
 
 Place `saw` on `PATH`. Verify: `saw version`.
 

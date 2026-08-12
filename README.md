@@ -6,7 +6,7 @@ Supports **EVM** (`eip155:*` — `exact` EIP-3009/Permit2 and **`batch-settlemen
 
 ## Install
 
-Download a release binary from [GitHub Releases](https://github.com/AxLabs/simple-agent-wallet/releases), or build from source:
+Download a release binary from the [latest release](https://github.com/AxLabs/simple-agent-wallet/releases/latest), or build from source:
 
 ```bash
 make build     # → ./bin/saw

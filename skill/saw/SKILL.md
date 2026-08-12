@@ -20,7 +20,7 @@ Cross-platform CLI for agent wallets and x402 payments.
 
 Download the binary for the host OS/arch from:
 
-https://github.com/AxLabs/simple-agent-wallet/releases
+https://github.com/AxLabs/simple-agent-wallet/releases/latest
 
 Place `saw` on `PATH`. Verify: `saw version`.
 
