@@ -1,12 +1,12 @@
-# SAW — Simple Agent Wallet
+# SAW - Simple Agent Wallet
 
 Powered by [AxLabs](https://axlabs.com).
 
 Cross-platform CLI wallet for agents that pay HTTP 402 / x402 resources.
 
-- **EVM** `eip155:*` — `exact` (EIP-3009 + Permit2) and `batch-settlement`
-- **Solana** `solana:*` — partially signed versioned tx + `feePayer`
-- **Hedera** `hedera:mainnet` / `hedera:testnet` — partially signed transfer + `feePayer`
+- **EVM** `eip155:*` - `exact` (EIP-3009 + Permit2) and `batch-settlement`
+- **Solana** `solana:*` - partially signed versioned tx + `feePayer`
+- **Hedera** `hedera:mainnet` / `hedera:testnet` - partially signed transfer + `feePayer`
 
 Site: human docs at `/docs/`. This file is the agent-oriented manual.
 
@@ -33,7 +33,7 @@ saw init import --family evm|solana|hedera
 saw init status
 ```
 
-Secrets: stdin / prompts only — never CLI flags.
+Secrets: stdin / prompts only - never CLI flags.
 Wallet: `~/.config/saw/wallet.json` (mode 0600). Override: `SAW_CONFIG_DIR`.
 
 ## RPC

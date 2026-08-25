@@ -84,7 +84,13 @@
             </div>
             <div class="hero-install">
               <p class="cmd-label">Install the agent skill</p>
-              <pre><code>npx skills add AxLabs/simple-agent-wallet --skill saw -g -y</code></pre>
+              <div class="term">
+                <div class="term-bar">
+                  <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <button type="button" class="term-copy" aria-label="Copy command">Copy</button>
+                </div>
+                <pre><code><span class="tok-cmd">npx</span> <span class="tok-cmd">skills</span> add <span class="tok-arg">AxLabs/simple-agent-wallet</span> <span class="tok-flag">--skill</span> <span class="tok-arg">saw</span> <span class="tok-flag">-g</span> <span class="tok-flag">-y</span></code></pre>
+              </div>
             </div>
           </div>
           <div class="hero-visual" aria-hidden="true">
@@ -116,9 +122,48 @@
           </div>
         </div>
         <p class="cmd-label">Then pay:</p>
-        <pre><code>saw init
-saw inspect https://example.com/paid
-saw pay https://example.com/paid --confirm</code></pre>
+        <div class="term">
+          <div class="term-bar">
+            <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <button type="button" class="term-copy" aria-label="Copy command">Copy</button>
+          </div>
+          <pre><code><span class="tok-cmd">saw</span> init
+<span class="tok-cmd">saw</span> inspect <span class="tok-str">https://example.com/paid</span>
+<span class="tok-cmd">saw</span> pay <span class="tok-str">https://example.com/paid</span> <span class="tok-flag">--confirm</span></code></pre>
+        </div>
+      </section>
+
+      <section class="section works" aria-labelledby="works-heading">
+        <h2 id="works-heading">Works with</h2>
+        <div class="works-block">
+          <div class="works-grid">
+            <a class="works-item" href="https://x.neo.org/" rel="noopener">
+              <img src="assets/chain-neox.svg" alt="" width="32" height="32" />
+              <span>Neo X</span>
+            </a>
+            <a class="works-item" href="https://ethereum.org/" rel="noopener">
+              <img src="assets/chain-ethereum.svg" alt="" width="32" height="32" />
+              <span>Ethereum</span>
+            </a>
+            <a class="works-item" href="https://polygon.technology/" rel="noopener">
+              <img src="assets/chain-polygon.svg" alt="" width="32" height="32" />
+              <span>Polygon</span>
+            </a>
+            <a class="works-item" href="https://www.optimism.io/" rel="noopener">
+              <img src="assets/chain-optimism.svg" alt="" width="32" height="32" />
+              <span>Optimism</span>
+            </a>
+            <a class="works-item" href="https://solana.com/" rel="noopener">
+              <img src="assets/chain-solana.svg" alt="" width="32" height="32" />
+              <span>Solana</span>
+            </a>
+            <a class="works-item" href="https://hedera.com/" rel="noopener">
+              <img src="assets/chain-hedera.svg" alt="" width="32" height="32" />
+              <span>Hedera</span>
+            </a>
+          </div>
+          <p class="works-more">… and all EVM chains out there!</p>
+        </div>
       </section>
 
       <footer class="foot">
@@ -157,6 +202,45 @@ saw pay https://example.com/paid --confirm</code></pre>
             });
           })
           .catch(function () {});
+      })();
+
+      (function () {
+        function fallbackCopy(text, done) {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+            done();
+          } catch (e) {}
+          document.body.removeChild(ta);
+        }
+
+        document.querySelectorAll(".term").forEach(function (box) {
+          var btn = box.querySelector(".term-copy");
+          var code = box.querySelector("pre code");
+          if (!btn || !code) return;
+          btn.addEventListener("click", function () {
+            var text = code.textContent.replace(/\n$/, "");
+            var done = function () {
+              btn.textContent = "Copied";
+              setTimeout(function () {
+                btn.textContent = "Copy";
+              }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(done).catch(function () {
+                fallbackCopy(text, done);
+              });
+            } else {
+              fallbackCopy(text, done);
+            }
+          });
+        });
       })();
     </script>
   </body>
