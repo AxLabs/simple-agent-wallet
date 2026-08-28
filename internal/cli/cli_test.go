@@ -21,6 +21,16 @@ func TestCLIConfirmGating(t *testing.T) {
 	require.Contains(t, stderr.String(), "--confirm")
 }
 
+func TestCLISkipBalanceCheckStillRequiresConfirm(t *testing.T) {
+	bin := buildSaw(t)
+	cmd := exec.Command(bin, "pay", "http://127.0.0.1:9/", "--skip-balance-check")
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	require.Error(t, err)
+	require.Contains(t, stderr.String(), "--confirm")
+}
+
 func TestCLINoSecretsInStatus(t *testing.T) {
 	bin := buildSaw(t)
 	dir := t.TempDir()

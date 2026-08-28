@@ -172,7 +172,7 @@ func TestPayEIP3009HTTP(t *testing.T) {
 	defer srv.Close()
 
 	cfg := &config.Config{EVMRPC: map[string]string{}}
-	res, err := x402pay.Pay(context.Background(), w, cfg, "GET", srv.URL, nil, nil, x402pay.SelectOpts{})
+	res, err := x402pay.Pay(context.Background(), w, cfg, "GET", srv.URL, nil, nil, x402pay.SelectOpts{SkipBalanceCheck: true})
 	require.NoError(t, err)
 	require.True(t, sawPayment)
 	require.True(t, res.OK)

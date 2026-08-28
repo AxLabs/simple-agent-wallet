@@ -27,9 +27,10 @@ npx skills add AxLabs/simple-agent-wallet --skill saw -g -y
 saw init
 saw init status
 saw inspect <url> [--method POST --data '...']
-saw pay <url> --confirm [--method POST --data '...']
+saw pay <url> --confirm [--method POST --data '...'] [--skip-balance-check]
 ```
 
 Do not scrape PAYMENT-REQUIRED headers with curl — use saw inspect/pay.
+`saw pay` checks the selected token balance before signing; `--skip-balance-check` opts out of that preflight only.
 
 Secrets never on argv (stdin/prompts only). Wallet: ~/.config/saw/wallet.json

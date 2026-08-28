@@ -3,12 +3,14 @@ package tx
 import (
 	"context"
 	"fmt"
+	"math/big"
+	"strings"
 
 	"github.com/AxLabs/simple-agent-wallet/internal/config"
 	"github.com/AxLabs/simple-agent-wallet/internal/store"
 	solana "github.com/gagliardetto/solana-go"
-	"github.com/gagliardetto/solana-go/rpc"
 	"github.com/gagliardetto/solana-go/programs/system"
+	"github.com/gagliardetto/solana-go/rpc"
 )
 
 func SolanaClient(cfg *config.Config) (*rpc.Client, error) {
@@ -81,4 +83,50 @@ func SolanaBalance(ctx context.Context, cfg *config.Config, w *store.Wallet) (ui
 		return 0, err
 	}
 	return out.Value, nil
+}
+
+// SolanaTokenBalance returns the payer's SPL token balance for mint, in base units.
+// A missing token account is a zero balance, not a lookup failure.
+func SolanaTokenBalance(ctx context.Context, cfg *config.Config, w *store.Wallet, mint string) (*big.Int, error) {
+	if w.Solana == nil {
+		return nil, store.ErrFamilyMissing
+	}
+	mint = strings.TrimPrefix(strings.TrimSpace(mint), "spl:")
+	client, err := SolanaClient(cfg)
+	if err != nil {
+		return nil, err
+	}
+	owner, err := solana.PublicKeyFromBase58(w.Solana.Address)
+	if err != nil {
+		return nil, err
+	}
+	mintPK, err := solana.PublicKeyFromBase58(mint)
+	if err != nil {
+		return nil, fmt.Errorf("invalid SPL mint %q: %w", mint, err)
+	}
+	accounts, err := client.GetTokenAccountsByOwner(ctx, owner, &rpc.GetTokenAccountsConfig{Mint: &mintPK}, &rpc.GetTokenAccountsOpts{
+		Commitment: rpc.CommitmentFinalized,
+	})
+	if err != nil {
+		return nil, err
+	}
+	total := big.NewInt(0)
+	if accounts == nil {
+		return total, nil
+	}
+	for _, acc := range accounts.Value {
+		bal, err := client.GetTokenAccountBalance(ctx, acc.Pubkey, rpc.CommitmentFinalized)
+		if err != nil {
+			return nil, err
+		}
+		if bal == nil || bal.Value == nil {
+			return nil, fmt.Errorf("empty token account balance for %s", acc.Pubkey)
+		}
+		n, ok := new(big.Int).SetString(bal.Value.Amount, 10)
+		if !ok {
+			return nil, fmt.Errorf("invalid token amount %q", bal.Value.Amount)
+		}
+		total.Add(total, n)
+	}
+	return total, nil
 }

@@ -27,6 +27,7 @@ saw init status
 saw address
 saw inspect https://example.com/paid
 saw pay https://example.com/paid --confirm
+saw pay https://example.com/paid --confirm --skip-balance-check   # sign without balance preflight
 ```
 
 Secrets are never accepted via CLI flags — only stdin / interactive prompts. Wallet file: `~/.config/saw/wallet.json` (mode `0600`). RPC endpoints: `~/.config/saw/config.env`.
@@ -39,7 +40,7 @@ Secrets are never accepted via CLI flags — only stdin / interactive prompts. W
 | `saw address [--family]` | Print configured addresses |
 | `saw balance …` | Native / token balances |
 | `saw inspect <url>` | Decode 402 `accepts[]` |
-| `saw pay <url> --confirm` | Sign and retry (`exact` or `batch-settlement`) |
+| `saw pay <url> --confirm` | Sign and retry (`exact` or `batch-settlement`); checks selected token balance first (`--skip-balance-check` to opt out) |
 | `saw channels` / `saw refund <url> --confirm` | Batch-settlement sessions / cooperative refund |
 | `saw approve-permit2 --chain-id N --token 0x… --confirm` | ERC-20 approve Permit2 |
 | `saw transfer … --confirm` | EVM / Solana / Hedera transfers |

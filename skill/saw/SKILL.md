@@ -51,6 +51,7 @@ SAW_RPC_8453=https://mainnet.base.org
 SAW_RPC_84532=https://sepolia.base.org
 SAW_SOLANA_RPC=https://api.mainnet-beta.solana.com
 SAW_HEDERA_NETWORK=testnet
+SAW_HEDERA_MIRROR=
 ```
 
 ## Pay flow (generic x402)
@@ -83,7 +84,8 @@ saw pay <url> --confirm \
   [--asset 0x…] \
   [--asset-transfer-method eip3009|permit2] \
   [--method POST --data '...'] \
-  [--order-status 'https://…/status?tx={tx}']
+  [--order-status 'https://…/status?tx={tx}'] \
+  [--skip-balance-check]
 ```
 
 For **batch-settlement**, configure `SAW_RPC_<chainId>` so channel recovery works. Sessions persist under `~/.config/saw/channels/`. Optional deposit sizing: `SAW_BATCH_DEPOSIT_MULTIPLIER` (default 5).
@@ -96,9 +98,17 @@ saw refund <url> --amount <units> --confirm
 
 `--confirm` is required. One attempt; no loops without user confirmation.
 
-5. Transfers / EVM extras when needed:
+By default `saw pay` queries the selected asset balance (ERC-20, SPL, HTS, or native) and refuses to sign when funds are short or the lookup fails. Report `network`, `asset`, `required`, `available`, and `shortfall` from an insufficient-balance error. Use `--skip-balance-check` only when the user confirms — it is for RPC/mirror outages or intentional unsigned settlement, not to bypass a known shortfall.
+
+5. Balances / transfers when needed:
 
 ```bash
+saw balance --family evm --chain-id N
+saw balance --family evm --chain-id N --token 0x…
+saw balance --family solana
+saw balance --family solana --token <mint>
+saw balance --family hedera
+saw balance --family hedera --token 0.0.x
 saw transfer --family evm --chain-id N --to 0x… --amount <wei> --confirm
 saw transfer --family evm --chain-id N --token 0x… --to 0x… --amount <units> --confirm
 saw transfer --family solana --to <pubkey> --amount <lamports> --confirm
@@ -114,3 +124,4 @@ saw abi encode 'transfer(address,uint256)' 0x… 1000
 - Never pass a `PAYMENT-REQUIRED` / `PAYMENT-SIGNATURE` token as a CLI argument; `saw` handles headers.
 - Discovery of merchant URLs comes from the user or the 402 body — this skill is not vendor-specific.
 - If the selected accept family has no wallet credentials, run `saw init` for that family first.
+- Do not retry `saw pay` with `--skip-balance-check` after an insufficient-balance error unless the user explicitly asks.

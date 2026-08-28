@@ -51,6 +51,8 @@ type SelectOpts struct {
 	// Index selects accepts[i] when PreferIndex is true.
 	Index       int
 	PreferIndex bool
+	// SkipBalanceCheck bypasses the selected-asset balance preflight only.
+	SkipBalanceCheck bool
 }
 
 type PayResult struct {
@@ -292,6 +294,11 @@ func Pay(ctx context.Context, w *store.Wallet, cfg *config.Config, method, url s
 	}
 	if !w.HasFamily(selected.Family) {
 		return nil, fmt.Errorf("selected accept family %q but wallet has no %s credentials", selected.Family, selected.Family)
+	}
+	if !opts.SkipBalanceCheck {
+		if err := CheckSelectedBalance(ctx, w, cfg, selected); err != nil {
+			return nil, err
+		}
 	}
 
 	built, err := BuildClient(w, cfg, selected.Network)

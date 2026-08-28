@@ -56,10 +56,10 @@ saw inspect <url> [--method POST --data '...']
 # confirm amount / network / asset / payTo with the user
 saw pay <url> --confirm [--method POST --data '...'] \
   [--network eip155:8453] [--asset 0x…] [--asset-transfer-method eip3009|permit2] \
-  [--scheme exact|batch-settlement]
+  [--scheme exact|batch-settlement] [--skip-balance-check]
 ```
 
-`--confirm` is required.
+`--confirm` is required. `saw pay` checks the selected token balance before signing; `--skip-balance-check` opts out of that preflight only.
 
 Permit2 (exact EVM) if needed:
 

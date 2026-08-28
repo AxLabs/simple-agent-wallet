@@ -13,6 +13,7 @@ import (
 	"github.com/AxLabs/simple-agent-wallet/internal/tx"
 	x402pay "github.com/AxLabs/simple-agent-wallet/internal/x402"
 	"github.com/spf13/cobra"
+	hederamech "github.com/x402-foundation/x402/go/v2/mechanisms/hedera"
 )
 
 func loadWallet() (*store.Wallet, *config.Config, error) {
@@ -105,13 +106,36 @@ func newBalanceCmd() *cobra.Command {
 				}
 				fmt.Println(bal.String())
 			case store.FamilySolana:
+				if token != "" {
+					bal, err := tx.SolanaTokenBalance(ctx, cfg, w, token)
+					if err != nil {
+						return err
+					}
+					fmt.Println(bal.String())
+					return nil
+				}
 				bal, err := tx.SolanaBalance(ctx, cfg, w)
 				if err != nil {
 					return err
 				}
 				fmt.Println(bal)
 			case store.FamilyHedera:
-				return fmt.Errorf("hedera balance via mirror not implemented in v1; use mirror node explorer")
+				if w.Hedera == nil {
+					return store.ErrFamilyMissing
+				}
+				asset := token
+				if asset == "" {
+					asset = hederamech.HBARAssetID
+				}
+				net := w.Hedera.Network
+				if net == "" {
+					net = cfg.HederaNetwork
+				}
+				bal, err := tx.HederaBalance(ctx, cfg, w, net, asset)
+				if err != nil {
+					return err
+				}
+				fmt.Println(bal.String())
 			default:
 				return fmt.Errorf("unknown family")
 			}
@@ -120,7 +144,7 @@ func newBalanceCmd() *cobra.Command {
 	}
 	cmd.Flags().StringVar(&family, "family", "evm", "evm|solana|hedera")
 	cmd.Flags().Int64Var(&chainID, "chain-id", 0, "EVM chain id")
-	cmd.Flags().StringVar(&token, "token", "", "ERC-20 token address")
+	cmd.Flags().StringVar(&token, "token", "", "ERC-20 address, SPL mint, or Hedera token id")
 	return cmd
 }
 
@@ -159,6 +183,7 @@ func newInspectCmd() *cobra.Command {
 func newPayCmd() *cobra.Command {
 	var method, data, network, asset, transferMethod, scheme, orderStatus string
 	var index int
+	var skipBalanceCheck bool
 	cmd := &cobra.Command{
 		Use:   "pay <url>",
 		Short: "Pay a 402 resource (exact or batch-settlement; requires --confirm)",
@@ -185,10 +210,11 @@ func newPayCmd() *cobra.Command {
 			ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 			defer cancel()
 			sel := x402pay.SelectOpts{
-				Network: network,
-				Asset:   asset,
-				Method:  transferMethod,
-				Scheme:  scheme,
+				Network:          network,
+				Asset:            asset,
+				Method:           transferMethod,
+				Scheme:           scheme,
+				SkipBalanceCheck: skipBalanceCheck,
 			}
 			if cmd.Flags().Changed("index") {
 				sel.PreferIndex = true
@@ -218,6 +244,7 @@ func newPayCmd() *cobra.Command {
 	cmd.Flags().StringVar(&scheme, "scheme", "", "exact|batch-settlement")
 	cmd.Flags().IntVar(&index, "index", 0, "accept index (only used when flag set)")
 	cmd.Flags().StringVar(&orderStatus, "order-status", "", "poll URL with {tx} placeholder")
+	cmd.Flags().BoolVar(&skipBalanceCheck, x402pay.SkipBalanceCheckFlag, false, "sign without checking selected token balance")
 	return cmd
 }
 
