@@ -15,6 +15,9 @@ builds:
     goarch:
       - amd64
       - arm64
+    ignore:
+      # Darwin is built, signed, and notarized on the Mac Mini runner.
+      - goos: darwin
     ldflags:
       - -s -w -X main.version={{.Version}}
 
