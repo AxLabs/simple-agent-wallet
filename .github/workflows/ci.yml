@@ -71,3 +71,86 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Darwin amd64/arm64: built, Developer ID signed, and notarized on the
+  # org Mac Mini. Ubuntu GoReleaser does not publish unsigned darwin archives.
+  #
+  # Runner labels: self-hosted, macOS, X64. Needs Xcode CLT (notarytool) and gh.
+  # Repo/org secrets (values stay off this public repo): MACOS_KEYCHAIN_PASSWORD,
+  # MACOS_KEYCHAIN_PATH, MACOS_SIGN_IDENTITY, MACOS_NOTARY_KEY_ID,
+  # MACOS_NOTARY_ISSUER_ID, MACOS_NOTARY_KEY_PATH.
+  #
+  # Job timeout must exceed two sequential notary waits (75m each) plus
+  # checkout/build and a wait retry. 360m is GitHub's usual 6h cap.
+  sign-macos:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: release
+    runs-on: [self-hosted, macOS, X64]
+    timeout-minutes: 360
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+      MACOS_KEYCHAIN_PATH: ${{ secrets.MACOS_KEYCHAIN_PATH }}
+      MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+      MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+      MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+      MACOS_NOTARY_KEY_PATH: ${{ secrets.MACOS_NOTARY_KEY_PATH }}
+      NOTARY_WAIT_TIMEOUT: 75m
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: simple-agent-wallet
+      - uses: actions/checkout@v4
+        with:
+          repository: AxLabs/x402
+          ref: feat/go-mechanisms-hedera-exact
+          path: x402
+          sparse-checkout: |
+            go
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+          cache-dependency-path: simple-agent-wallet/go.sum
+      - name: Module replace
+        working-directory: simple-agent-wallet
+        run: |
+          go mod edit -replace=github.com/x402-foundation/x402/go/v2=../x402/go
+          go mod tidy
+      - name: Build, sign, and notarize darwin
+        working-directory: simple-agent-wallet
+        run: |
+          set -euo pipefail
+          if ! command -v gh >/dev/null; then
+            echo "error: gh is not on PATH on this runner" >&2
+            exit 1
+          fi
+          for required in MACOS_KEYCHAIN_PASSWORD MACOS_KEYCHAIN_PATH MACOS_SIGN_IDENTITY MACOS_NOTARY_KEY_ID MACOS_NOTARY_ISSUER_ID MACOS_NOTARY_KEY_PATH; do
+            if [[ -z "${!required:-}" ]]; then
+              echo "error: ${required} secret is not set" >&2
+              exit 1
+            fi
+          done
+          VERSION="${GITHUB_REF_NAME#v}"
+          LDFLAGS="-s -w -X main.version=${VERSION}"
+          mkdir -p dist
+          for arch in amd64 arm64; do
+            mkdir -p "dist/darwin-${arch}"
+            CGO_ENABLED=0 GOOS=darwin GOARCH="${arch}" go build -ldflags "${LDFLAGS}" -o "dist/darwin-${arch}/saw" ./cmd/saw
+            ./scripts/sign-macos-saw.sh "dist/darwin-${arch}/saw"
+            tar czf "dist/saw_${VERSION}_darwin_${arch}.tar.gz" -C "dist/darwin-${arch}" saw
+          done
+          gh release upload "${GITHUB_REF_NAME}" \
+            "dist/saw_${VERSION}_darwin_amd64.tar.gz" \
+            "dist/saw_${VERSION}_darwin_arm64.tar.gz"
+          gh release download "${GITHUB_REF_NAME}" --pattern checksums.txt --output dist/checksums.txt
+          (
+            cd dist
+            shasum -a 256 \
+              "saw_${VERSION}_darwin_amd64.tar.gz" \
+              "saw_${VERSION}_darwin_arm64.tar.gz" >>checksums.txt
+          )
+          gh release upload "${GITHUB_REF_NAME}" dist/checksums.txt --clobber

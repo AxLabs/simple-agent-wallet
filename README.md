@@ -68,6 +68,12 @@ make build
 
 Requires local `../x402/go` (go.mod `replace`) — use the AxLabs `x402` fork while Hedera mechanisms are not upstream. CI checks out `AxLabs/x402@feat/go-mechanisms-hedera-exact`.
 
+## Releasing
+
+Push a `v*` tag. Ubuntu GoReleaser publishes Linux and Windows. The org Mac Mini self-hosted runner (`self-hosted`, `macOS`, `X64`) then builds, Developer ID-signs, and notarizes `darwin/amd64` and `darwin/arm64` and attaches them to the same GitHub Release. Notarization is sequential per arch and can take over an hour each; the `sign-macos` job is allowed 6 hours so GitHub does not cancel a live `notarytool wait`.
+
+The Mini needs Xcode CLT (`notarytool`) and `gh` on `PATH`. Signing credentials are repo (or org) Actions secrets — not files in this repository. Required: `MACOS_KEYCHAIN_PASSWORD`, `MACOS_KEYCHAIN_PATH`, `MACOS_SIGN_IDENTITY`, `MACOS_NOTARY_KEY_ID`, `MACOS_NOTARY_ISSUER_ID`, `MACOS_NOTARY_KEY_PATH`.
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
