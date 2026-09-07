@@ -11,7 +11,6 @@ import (
 	"github.com/AxLabs/simple-agent-wallet/internal/store"
 	"github.com/AxLabs/simple-agent-wallet/internal/tx"
 	solana "github.com/gagliardetto/solana-go"
-	evmmech "github.com/x402-foundation/x402/go/v2/mechanisms/evm"
 	evmv1 "github.com/x402-foundation/x402/go/v2/mechanisms/evm/v1"
 )
 
@@ -118,9 +117,6 @@ func QuerySelectedBalance(ctx context.Context, w *store.Wallet, cfg *config.Conf
 func evmChainID(network string) (int64, error) {
 	if id, err := ChainIDFromNetwork(network); err == nil {
 		return id, nil
-	}
-	if nc, ok := evmmech.NetworkConfigs[network]; ok && nc.ChainID != nil {
-		return nc.ChainID.Int64(), nil
 	}
 	if id, ok := evmv1.NetworkChainIDs[network]; ok && id != nil {
 		return id.Int64(), nil
