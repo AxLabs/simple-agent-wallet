@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Sign and notarize a SAW Mach-O using a dedicated Developer ID keychain.
-# Does not mutate the user keychain search list. Does not re-sign on notary wait timeouts.
+# Temporarily prepends that keychain to the user search list and restores it
+# on exit. Does not re-sign on notary wait timeouts.
 #
 # Required environment (set by CI secrets; do not commit values):
 #   MACOS_KEYCHAIN_PASSWORD
@@ -79,13 +80,33 @@ notary_status() {
 }
 
 WORKDIR=$(mktemp -d)
+ORIGINAL_KEYCHAINS=()
+while IFS= read -r line; do
+  line="${line#"${line%%[![:space:]]*}"}"
+  line="${line%"${line##*[![:space:]]}"}"
+  line="${line#\"}"
+  line="${line%\"}"
+  [[ -n "$line" ]] && ORIGINAL_KEYCHAINS+=("$line")
+done < <(security list-keychains -d user)
+
 cleanup() {
+  if ((${#ORIGINAL_KEYCHAINS[@]} > 0)); then
+    security list-keychains -d user -s "${ORIGINAL_KEYCHAINS[@]}" >/dev/null
+  fi
   rm -rf "$WORKDIR"
 }
 trap cleanup EXIT
 
 security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$MACOS_KEYCHAIN_PATH"
 security set-keychain-settings -lut 21600 "$MACOS_KEYCHAIN_PATH"
+# codesign talks to securityd via the search list; --keychain alone is not enough.
+if ((${#ORIGINAL_KEYCHAINS[@]} > 0)); then
+  security list-keychains -d user -s "$MACOS_KEYCHAIN_PATH" "${ORIGINAL_KEYCHAINS[@]}" >/dev/null
+else
+  security list-keychains -d user -s "$MACOS_KEYCHAIN_PATH" >/dev/null
+fi
+# Private-key ACL otherwise prompts in a GUI and fails headless with errSecInternalComponent.
+security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_KEYCHAIN_PASSWORD" "$MACOS_KEYCHAIN_PATH" >/dev/null
 
 echo "==> codesigning identity"
 security find-identity -v -p codesigning "$MACOS_KEYCHAIN_PATH"
